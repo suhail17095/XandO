@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X and O</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 40px;
+            background-color: rgb(165, 165, 226);
+        }
+
+        .text {
+            margin-bottom: 40px;
+        }
+
+        .result {
+            margin-top: 40px;
+        }
+
+        .images {
+            width: 100px;
+            height: 100px;
+            border: solid rgb(128, 112, 207) 2px;
+        }
+
+        .text,
+        .result {
+            font-size: 2rem;
+            font-style: bold;
+        }
+
+        button {
+            width: 160px;
+            height: 42px;
+            background-color: aqua;
+            border: none;
+            margin-top: 1rem;
+        }
+
+        @media screen and (max-width: 844px) {
+            .images{
+                height: 50px;
+                width: 50px;
+            }
+            .text{
+                margin-top: 4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text">
+        X and O game
+    </div>
+    <div class="container">
+        <div class="rows">
+            <img src="blank.jpg" alt="" class="images" style="border-left:none; border-top:none;" onclick="c(this,0,0)">
+            <img src="blank.jpg" alt="" class="images" style="border-top:none;" onclick="c(this,0,1)">
+            <img src="blank.jpg" alt="" class="images" style="border-right:none; border-top:none;"
+                onclick="c(this,0,2)">
+        </div>
+        <div class="rows">
+            <img src="blank.jpg" alt="" class="images" style="border-left:none;" onclick="c(this,1,0)">
+            <img src="blank.jpg" alt="" class="images" onclick="c(this,1,1)">
+            <img src="blank.jpg" alt="" class="images" style="border-right:none;" onclick="c(this,1,2)">
+        </div>
+        <div class="rows">
+            <img src="blank.jpg" alt="" class="images" style="border-left:none; border-bottom:none;"
+                onclick="c(this,2,0)">
+            <img src="blank.jpg" alt="" class="images" style="border-bottom:none;" onclick="c(this,2,1)">
+            <img src="blank.jpg" alt="" class="images" style="border-right:none; border-bottom:none;"
+                onclick="c(this,2,2)">
+        </div>
+    </div>
+    <div class="result">
+        Here will be result shown
+    </div>
+    <div class="restart">
+        <button onclick="restart(this)">Restart</button>
+    </div>
+
+    <script>
+        var position = new Array(3);
+        for (let i = 0; i < position.length; i++) {
+            position[i] = new Array(3);
+            for (let j = 0; j < position[i].length; j++) {
+                position[i][j] = -1;
+            }
+        }
+        var click = new Audio('click_sound.wav');
+        var error = new Audio("error.wav");
+        var win = new Audio("winner.wav");
+        var turn = "X";
+        print_turn();
+        function c(e, row, column) {
+            if (position[row][column] == "X" || position[row][column] == "O") {
+                print_warning();
+                return;
+            }
+            click.play();
+            position[row][column] = turn;
+            if (turn == "X") {
+                e.src = "X.jpg";
+                turn = "O";
+            }
+            else if (turn == "O") {
+                e.src = "O.jpg";
+                turn = "X";
+            }
+            let winner = check();
+            if (winner != -1) {
+                print_winner(winner);
+                return;
+            }
+            print_turn();
+
+        }
+        function print_design(option, winner) {
+            win.play();
+            let images = document.getElementsByClassName("images");
+            if (option == 1) {
+                images[0].src = winner + "2.jpg";
+                images[1].src = winner + "2.jpg";
+                images[2].src = winner + "2.jpg"
+                return;
+            }
+            if (option == 2) {
+                images[0].src = winner + "4.jpg";
+                images[3].src = winner + "4.jpg";
+                images[6].src = winner + "4.jpg";
+                return;
+            }
+            if (option == 3) {
+                images[2].src = winner + "4.jpg";
+                images[5].src = winner + "4.jpg";
+                images[8].src = winner + "4.jpg"
+                return;
+            }
+            if (option == 4) {
+                images[6].src = winner + "2.jpg";
+                images[7].src = winner + "2.jpg";
+                images[8].src = winner + "2.jpg"
+                return;
+            }
+            if (option == 5) {
+                images[0].src = winner + "1.jpg";
+                images[4].src = winner + "1.jpg";
+                images[8].src = winner + "1.jpg"
+                return;
+            }
+            if (option == 6) {
+                images[2].src = winner + "3.jpg";
+                images[4].src = winner + "3.jpg";
+                images[6].src = winner + "3.jpg"
+                return;
+            }
+            if (option == 7) {
+                images[1].src = winner + "4.jpg";
+                images[4].src = winner + "4.jpg";
+                images[7].src = winner + "4.jpg"
+                return;
+            }
+            if (option == 8) {
+                images[3].src = winner + "2.jpg";
+                images[4].src = winner + "2.jpg";
+                images[5].src = winner + "2.jpg"
+                return;
+            }
+
+        }
+        function check() {
+            if (position[0][0] == position[0][1] && position[0][1] == position[0][2] && position[0][0] != -1) {
+                print_design(1, position[0][0]);
+                return position[0][0];
+            }
+            else if (position[0][0] == position[1][0] && position[1][0] == position[2][0] && position[0][0] != -1) {
+                print_design(2, position[0][0]);
+                return position[0][0];
+            }
+            else if (position[0][2] == position[1][2] && position[1][2] == position[2][2] && position[0][2] != -1) {
+                print_design(3, position[0][2]);
+                return position[0][2];
+            }
+            else if (position[2][0] == position[2][1] && position[2][1] == position[2][2] && position[2][0] != -1) {
+                print_design(4, position[2][0]);
+                return position[2][0];
+            }
+            else if (position[0][0] == position[1][1] && position[1][1] == position[2][2] && position[0][0] != -1) {
+                print_design(5, position[0][0]);
+                return position[0][0];
+            }
+            else if (position[0][2] == position[1][1] && position[1][1] == position[2][0] && position[0][2] != -1) {
+                print_design(6, position[0][2]);
+                return position[0][2];
+            }
+            else if (position[0][1] == position[1][1] && position[1][1] == position[2][1] && position[2][1] != -1) {
+                print_design(7, position[1][1]);
+                return position[0][1];
+            }
+            else if (position[1][0] == position[1][1] && position[1][1] == position[1][2] && position[1][1] != -1) {
+                print_design(8, position[1][2]);
+                return position[1][0];
+            }
+            var flag = false;
+            for (let i = 0; i < position.length; i++) {
+                for (let j = 0; j < position[i].length; j++) {
+                    if (position[i][j] == -1)
+                        return -1;
+                }
+            }
+            return "Draw"
+        }
+        function restart(e) {
+            let images = document.getElementsByClassName("images");
+            turn = "X";
+            for (let i = 0; i < images.length; i++) {
+                images[i].src = "blank.jpg";
+            }
+            for (let i = 0; i < position.length; i++) {
+                for (let j = 0; j < position[i].length; j++) {
+                    position[i][j] = -1;
+                }
+            }
+
+        }
+        function print_turn() {
+            var result = document.getElementsByClassName("result")[0];
+            result.innerHTML = "Now is " + turn + "'s turn";
+        }
+        function print_winner(winner) {
+            var result = document.getElementsByClassName("result")[0];
+            result.innerHTML = winner + " is the winner";
+        }
+        function print_warning() {
+            error.play();
+            var result = document.getElementsByClassName("result")[0];
+            result.innerHTML = "Place is already occupied please find a new place";
+        }
+
+    </script>
+</body>
+
+</html>
